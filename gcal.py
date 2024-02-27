@@ -1,6 +1,5 @@
 import datetime
 import os.path
-import pprint
 from datetime import datetime, timedelta
 from tzlocal import get_localzone
 import pytz
@@ -14,7 +13,6 @@ from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-pp = pprint.PrettyPrinter(indent=4)
 
 
 # Parse the date string returned from Google into a Python datetime object
@@ -114,18 +112,13 @@ def retrieve_events(calendar_id='primary', day=None, sort=True):
             token.write(creds.to_json())
 
     try:
+        # Connect to Google Calendar API
         service = build("calendar", "v3", credentials=creds)
-
-        calendar = service.calendars().get(calendarId=calendar_id).execute()
-
-        # Retrieves all the data from the specified calendar within the time range.
         page_token = None
         found_events = []
 
         while True:
-
             now = datetime.now()
-
             starttime = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=get_localzone())
             endtime = datetime(now.year, now.month, now.day, 23, 59, 59, tzinfo=get_localzone())
 
@@ -142,6 +135,7 @@ def retrieve_events(calendar_id='primary', day=None, sort=True):
             t_start = starttime.astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
             t_end = endtime.astimezone(pytz.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
+            # Retrieves all the data from the specified calendar within the time range.
             events = service.events().list(calendarId=calendar_id, timeMin=t_start, timeMax=t_end,
                                            pageToken=page_token).execute()
             for event in events['items']:
@@ -165,17 +159,22 @@ def p_date(p: printer, weekday=True, multiline=False) -> None:
     """
         Prints the current date on the specified ESC/POS Device
         Args:
-            p: printer    - escpos.printer the date will be printed to
-            weekday: bool - Determines whether the day of the week will be
-                            printed (True=Yes, False=No)
+            p: printer      - escpos.printer the date will be printed to
+            weekday: bool   - Determines whether the day of the week will be
+                              printed (True=Yes, False=No)
+            multiline: bool - When True adds a newline between the day of the week and the date.
     """
 
     dt = datetime.now()
+
     if weekday:
         p.text(dt.strftime('%A, '))
+
     if multiline:
         p.text(dt.strftime('\n'))
+
     p.textln(dt.strftime('%d %B %Y'))
+
 
 def p_calendar(p: printer, calendar_id, event_length=True, event_location=True, event_description=True) -> None:
     """
@@ -196,7 +195,7 @@ def p_calendar(p: printer, calendar_id, event_length=True, event_location=True, 
         p.textln(item['summary'])
         p.set(height=2, width=2, custom_size=True)
 
-        if(event_length):
+        if (event_length):
             p.textln(
                 to_local_tz(parse_result_to_time(item['start']['dateTime'])).strftime("%I:%M %p") + " - " + to_local_tz(
                     parse_result_to_time(item['end']['dateTime'])).strftime("%I:%M %p"))
@@ -216,11 +215,12 @@ def p_calendar(p: printer, calendar_id, event_length=True, event_location=True, 
 
     p.ln(100)
 
+
 """
         TODO: Come back and make this an available function!!!!!
 
     """
-# This segment retrieves all of the calendars associated with the current user's Google account
+# This segment retrieves all the calendars associated with the current user's Google account
 # page_token = None
 # while True:
 #    calendar_list = service.calendarList().list(pageToken=page_token).execute()
