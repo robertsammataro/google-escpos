@@ -37,7 +37,6 @@ def p_date(p: printer, weekday=True, multiline=False) -> None:
 def generate_report() -> None:
     #pp.pprint(retrieve_events())
     p = printer.Serial("COM4")
-    test_printer(p)
     p.set(double_height=True, double_width=True)
     p.set(height=3, width=3, custom_size=True)
     p.line_spacing(3)
@@ -49,7 +48,7 @@ def generate_report() -> None:
     p.textln('Here\'s a look at your day:')
     p.ln(25)
     
-    for item in retrieve_events(calendar_id='rsammataro1126@gmail.com', day='2024-02-29', sort=False):
+    for item in retrieve_events(calendar_id='rsammataro1126@gmail.com', sort=True):
       p.set(height=3, width=3, custom_size=True)
       p.textln(item['summary'])
       p.set(height=2, width=2, custom_size=True)

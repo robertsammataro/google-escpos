@@ -56,7 +56,7 @@ def to_local_tz(dt: datetime) -> datetime:
     """
     return dt.astimezone(get_localzone())
     
-def insert_event(sorted_events: dict[], new_event: dict) -> dict[]:
+def insert_event(sorted_events: dict, new_event: dict) -> dict:
     """
       Inserts event dictionaries into a list such that the earliest occuring events are in the front
       of the list and the latest occuring events are in the back. 
