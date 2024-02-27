@@ -56,9 +56,17 @@ def to_local_tz(dt: datetime) -> datetime:
     """
     return dt.astimezone(get_localzone())
     
-def insert_event(sorted_events, new_event):
-    count = 0   
+def insert_event(sorted_events: dict[], new_event: dict) -> dict[]:
+    """
+      Inserts event dictionaries into a list such that the earliest occuring events are in the front
+      of the list and the latest occuring events are in the back. 
+      
+      Args:
+          sorted_events: dict[] - Sorted list of Google Calendar events that the event will be inserted into
+          new_event: dict       - New event dictionary that will be inserted into sorted_events
+    """
     
+    count = 0   
     while count < len(sorted_events):
         if(parse_result_to_time(new_event['start']['dateTime']) < parse_result_to_time(sorted_events[count]['start']['dateTime'])):
             sorted_events.insert(count, new_event)
