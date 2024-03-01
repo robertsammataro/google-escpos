@@ -11,7 +11,9 @@ Have you ever wanted to start your morning off with a report of your day's activ
 Running the google-escpos project requires a few python libraries, all of which can be installed via pip. The required libraries for google-escpos are:
 - pytz (Python Timezone Library)
 - tzlocal (Local Timezone Library)
-- google-api-python-client (For using the Google API)
+- google-api-python-client (For using the Google API
+
+For a complete list of all required libraries as well as sample code on how to get up and running, check out our Getting Started Wiki page. 
 
 ## Developer Plans
 The google-escpos project is still in its infancy, and there are still plenty of features that are planned to be added. Some of the features in the works are:
