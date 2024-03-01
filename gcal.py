@@ -176,7 +176,7 @@ def p_date(p: printer, weekday=True, multiline=False) -> None:
     p.textln(dt.strftime('%d %B %Y'))
 
 
-def p_calendar(p: printer, calendar_id, event_length=True, event_location=True, event_description=True) -> None:
+def p_calendar(p: printer, calendar_id: str, event_length=True, event_location=True, event_description=True) -> None:
     """
         Prints the specified calendar with formatting. Includes event name,
         time, and location (if applicable)
@@ -191,6 +191,54 @@ def p_calendar(p: printer, calendar_id, event_length=True, event_location=True, 
                                       (True=yes, False=No)
     """
     for item in retrieve_events(calendar_id=calendar_id, sort=True):
+        p.set(height=3, width=3, custom_size=True)
+        p.textln(item['summary'])
+        p.set(height=2, width=2, custom_size=True)
+
+        if (event_length):
+            p.textln(
+                to_local_tz(parse_result_to_time(item['start']['dateTime'])).strftime("%I:%M %p") + " - " + to_local_tz(
+                    parse_result_to_time(item['end']['dateTime'])).strftime("%I:%M %p"))
+            p.ln(5)
+
+        # Print location if that option is selected and the event has a defined location
+        if (event_location and item.get('location')):
+            p.text(item['location'])
+            p.ln(5)
+
+        # Print location if that option is selected and the event has a defined location
+        if (event_description and item.get('description')):
+            p.text(item['description'])
+            p.ln(5)
+
+        p.ln(10)
+
+    p.ln(100)
+
+
+def p_multi_calendar(p: printer, calendar_id, event_length=True, event_location=True, event_description=True) -> None:
+    """
+        Prints the specified calendars with formatting. Includes event name,
+        time, and location (if applicable)
+        Args:
+            p: printer              - escpos.printer the date will be printed to
+            calendar_id: str[]      - array of calendar_id's of the calendar that will be printed.
+            event_length: bool      - Determines whether the start and end time of the events on the calendar will be
+                                      printed (True=yes, False=no)
+            event_location: bool    - Determines whether the location of each event on the calendar will be printed
+                                      (True=yes, False=No)
+            event_description: bool - Determines whether the description of each event on the calendar will be printed
+                                      (True=yes, False=No)
+    """
+
+    comb_events = []
+    for item in calendar_id:
+        for event in retrieve_events(calendar_id=item, sort=True):
+            comb_events = insert_event(comb_events, event)
+
+
+
+    for item in comb_events:
         p.set(height=3, width=3, custom_size=True)
         p.textln(item['summary'])
         p.set(height=2, width=2, custom_size=True)
